@@ -9,6 +9,11 @@ const props = defineProps<{
   height: number | string
 }>()
 let editInstance: monaco.editor.IStandaloneCodeEditor | null = null
+const getEditorValue = () => {
+  return editInstance?.getModel()?.getValue()
+}
+defineExpose({ getEditorValue })
+
 nextTick(() => {
   let editorDom = document.getElementById(props.editorId)
   if (editorDom !== null) {

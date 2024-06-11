@@ -55,7 +55,7 @@ export function onMessage(requests: MyRequest[]) {
       return true
     })
 }
-export function replay(request: MyRequest) {
+export function replay(request: MyRequest, requestList: MyRequest[]) {
   let config = {
     method: request.method,
     headers: {},
@@ -73,6 +73,8 @@ export function replay(request: MyRequest) {
     .then((response) => response.json())
     .then((data) => {
       console.log(data)
+      request.responseBody = JSON.stringify(data)
+      requestList.push(request)
     })
     .catch((error) => console.error(error))
 }

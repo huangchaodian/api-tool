@@ -6,22 +6,22 @@ import { ref, computed } from 'vue'
 import { getTreeData, onMessage, replay } from '../core/request'
 
 const requests = ref<MyRequest[]>([
-  {
-    url: 'http://localhost/test/tmp',
-    method: 'POST',
-    requestBody: '{"a":1,"b":2}',
-    responseBody: '{"c":3,"d":4}'
-  },
-  {
-    url: 'http://localhost/test/tmp',
-    method: 'POST',
-    requestBody: '{"a":5,"b":6}',
-    responseBody: '{"c":7,"d":8}'
-  }
+  // {
+  //   url: 'http://localhost/test/tmp',
+  //   method: 'POST',
+  //   requestBody: '{"a":1,"b":2}',
+  //   responseBody: '{"c":3,"d":4}'
+  // },
+  // {
+  //   url: 'http://localhost/test/tmp',
+  //   method: 'POST',
+  //   requestBody: '{"a":5,"b":6}',
+  //   responseBody: '{"c":7,"d":8}'
+  // }
 ])
 const selectedRequest = ref<MyRequest>()
-const monacoEditUrl = ref(null)
-const monacoEditReq = ref(null)
+const monacoEditUrl = ref()
+const monacoEditReq = ref()
 
 onMessage(requests.value)
 
@@ -42,13 +42,13 @@ const handleNodeClick = (data: number) => {
   data ? (selectedRequest.value = requests.value[data]) : null
 }
 const handleReply = () => {
-  console.log(monacoEditReq.value)
+  console.log(monacoEditReq?.value?.getEditorValue())
   const request: MyRequest = {
-    url: 'a',
+    url: monacoEditUrl?.value?.getEditorValue(),
     method: 'POST',
-    requestBody: ''
+    requestBody: monacoEditReq?.value?.getEditorValue()
   }
-  replay(request)
+  replay(request, requests.value)
 }
 </script>
 
