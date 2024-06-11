@@ -1,8 +1,4 @@
 <script setup lang="ts">
-interface Tree {
-  label: string
-  children?: Tree[]
-}
 const defaultProps = {
   children: 'children',
   label: 'label'
@@ -10,9 +6,14 @@ const defaultProps = {
 defineProps<{
   data: Tree[]
 }>()
+const emit = defineEmits(['request-click'])
+const handleNodeClick = (data: Tree) => {
+  if (data.id) {
+    emit('request-click', data.id)
+  }
+}
 </script>
 
 <template>
-  <div>tree</div>
-  <el-tree :data="data" :props="defaultProps"></el-tree>
+  <el-tree :data="data" :props="defaultProps" @node-click="handleNodeClick"></el-tree>
 </template>
