@@ -6,7 +6,7 @@ const props = defineProps<{
   editorId: string
   value: string
   language: string
-  height: number
+  height: number | string
 }>()
 let editInstance: monaco.editor.IStandaloneCodeEditor | null = null
 nextTick(() => {
@@ -45,7 +45,11 @@ watch(
 )
 </script>
 <template>
-  <div :id="editorId" class="editor" :style="{ height: height + 'px' }"></div>
+  <div
+    :id="editorId"
+    class="editor"
+    :style="{ height: typeof height === 'number' ? height + 'px' : height }"
+  ></div>
 </template>
 
 <style scoped>

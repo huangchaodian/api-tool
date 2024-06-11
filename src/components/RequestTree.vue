@@ -4,10 +4,10 @@ const defaultProps = {
   label: 'label'
 }
 defineProps<{
-  data: Tree[]
+  data: MyTree[]
 }>()
 const emit = defineEmits(['request-click'])
-const handleNodeClick = (data: Tree) => {
+const handleNodeClick = (data: MyTree) => {
   if (data.id) {
     emit('request-click', data.id)
   }

@@ -3,20 +3,27 @@ import RequestTree from '@/components/RequestTree.vue'
 import RequestAction from '@/components/RequestAction.vue'
 import MyMonacoEditor from '@/components/editor/MyMonacoEditor.vue'
 import { ref, computed } from 'vue'
-import { getTreeData } from '../core/request'
+import { getTreeData, onMessage, replay } from '../core/request'
+
 const requests = ref<MyRequest[]>([
   {
     url: 'http://localhost/test/tmp',
+    method: 'POST',
     requestBody: '{"a":1,"b":2}',
     responseBody: '{"c":3,"d":4}'
   },
   {
     url: 'http://localhost/test/tmp',
+    method: 'POST',
     requestBody: '{"a":5,"b":6}',
     responseBody: '{"c":7,"d":8}'
   }
 ])
 const selectedRequest = ref<MyRequest>()
+const monacoEditUrl = ref(null)
+const monacoEditReq = ref(null)
+
+onMessage(requests.value)
 
 const treeData = computed(() => {
   return getTreeData(requests.value)
@@ -34,6 +41,15 @@ const responseBody = computed(() => {
 const handleNodeClick = (data: number) => {
   data ? (selectedRequest.value = requests.value[data]) : null
 }
+const handleReply = () => {
+  console.log(monacoEditReq.value)
+  const request: MyRequest = {
+    url: 'a',
+    method: 'POST',
+    requestBody: ''
+  }
+  replay(request)
+}
 </script>
 
 <template>
@@ -42,10 +58,11 @@ const handleNodeClick = (data: number) => {
       <RequestTree :data="treeData" @request-click="handleNodeClick"></RequestTree>
     </div>
     <div class="right-content">
-      <div class="action"><RequestAction></RequestAction></div>
+      <div class="action"><RequestAction @replay="handleReply"></RequestAction></div>
       <div class="request-url">
         <MyMonacoEditor
           editor-id="monaco-edit-url"
+          ref="monacoEditUrl"
           language="text"
           :value="url"
           :height="20"
@@ -54,9 +71,10 @@ const handleNodeClick = (data: number) => {
       <div class="request-body">
         <MyMonacoEditor
           editor-id="monaco-edit-req"
+          ref="monacoEditReq"
           language="json"
           :value="requestBody"
-          :height="100"
+          :height="200"
         ></MyMonacoEditor>
       </div>
       <div class="response">
@@ -64,7 +82,7 @@ const handleNodeClick = (data: number) => {
           editor-id="monaco-edit-resp"
           language="json"
           :value="responseBody"
-          :height="100"
+          height="calc(100vh - 340px)"
         ></MyMonacoEditor>
       </div>
     </div>

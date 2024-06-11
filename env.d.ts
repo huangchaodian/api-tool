@@ -7,6 +7,7 @@ interface MyTree {
 }
 interface MyRequest {
   url: string
+  method: string
   requestBody?: string
   responseBody?: string
 }
