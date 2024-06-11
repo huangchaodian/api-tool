@@ -8,15 +8,22 @@ const props = defineProps<{
   language: string
   height: number
 }>()
-console.log(props)
-
 nextTick(() => {
   let editorDom = document.getElementById(props.editorId)
   if (editorDom !== null) {
-    monaco.editor.create(editorDom, {
-      value: props.value,
-      language: props.language
-    })
+    console.log(props)
+    if (props.language === 'text') {
+      monaco.editor.create(editorDom, {
+        model: monaco.editor.createModel(props.value, props.language)
+      })
+    } else if (props.language === 'json') {
+      monaco.editor.create(editorDom, {
+        model: monaco.editor.createModel(
+          JSON.stringify(JSON.parse(props.value), null, '\t'),
+          props.language
+        )
+      })
+    }
   }
 })
 </script>
