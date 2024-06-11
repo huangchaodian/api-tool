@@ -1,11 +1,11 @@
 /// <reference types="vite/client" />
 
-interface Tree {
-  id: string
+interface MyTree {
+  id?: string
   label: string
   children?: Tree[]
 }
-interface Request {
+interface MyRequest {
   url: string
   requestBody?: string
   responseBody?: string

@@ -1,6 +1,6 @@
-export function getTreeData(requests: Request[]): Tree[] {
+export function getTreeData(requests: MyRequest[]): MyTree[] {
   console.log(requests)
-  const tree: Tree[] = []
+  const tree: MyTree[] = []
   for (const i in requests) {
     const r = requests[i]
     const url = new URL(r.url)
@@ -14,10 +14,10 @@ export function getTreeData(requests: Request[]): Tree[] {
       })
     }
     const paths = uri.split('/').slice(1)
-    let children = tree.find((e) => e.label === host).children
+    let children = tree.find((e) => e.label === host)?.children || []
     for (const j in paths) {
       const path = paths[j]
-      if (j == paths.length - 1) {
+      if (parseInt(j) === paths.length - 1) {
         children.push({
           id: i,
           label: path

@@ -3,8 +3,8 @@ import RequestTree from '@/components/RequestTree.vue'
 import RequestAction from '@/components/RequestAction.vue'
 import MyMonacoEditor from '@/components/editor/MyMonacoEditor.vue'
 import { ref, computed } from 'vue'
-import { getTreeData } from '../core/request.ts'
-const requests = ref([
+import { getTreeData } from '../core/request'
+const requests = ref<MyRequest[]>([
   {
     url: 'http://localhost/test/tmp',
     requestBody: '{"a":1,"b":2}',
@@ -16,7 +16,7 @@ const requests = ref([
     responseBody: '{"c":7,"d":8}'
   }
 ])
-const selectedRequest = ref<Request>(null)
+const selectedRequest = ref<MyRequest>()
 
 const treeData = computed(() => {
   return getTreeData(requests.value)
@@ -31,7 +31,7 @@ const responseBody = computed(() => {
   return selectedRequest?.value?.responseBody || 'null'
 })
 
-const handleNodeClick = (data) => {
+const handleNodeClick = (data: number) => {
   data ? (selectedRequest.value = requests.value[data]) : null
 }
 </script>

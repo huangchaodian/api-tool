@@ -4,11 +4,11 @@ import { nextTick, watch } from 'vue'
 
 const props = defineProps<{
   editorId: string
-  value: string | undefine
+  value: string
   language: string
   height: number
 }>()
-let editInstance = null
+let editInstance: monaco.editor.IStandaloneCodeEditor | null = null
 nextTick(() => {
   let editorDom = document.getElementById(props.editorId)
   if (editorDom !== null) {
