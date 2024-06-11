@@ -1,6 +1,9 @@
 # api-tool
 
-This template should help get you started developing with Vue 3 in Vite.
+## introduction
+``
+api tool is a chrome extensions provider ability to compare ajax request, modify request then replay etc.
+``
 
 ## Recommended IDE Setup
 

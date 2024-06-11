@@ -1,9 +1,16 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import RequestTree from '@/components/RequestTree.vue'
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <div>
+    <div class="left-tree">
+      <RequestTree></RequestTree>
+    </div>
+    <div class="right-content">
+      <div class="request-url"></div>
+      <div class="request-body"></div>
+      <div class="response"></div>
+    </div>
+  </div>
 </template>

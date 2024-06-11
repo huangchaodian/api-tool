@@ -13,7 +13,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "bootstrap": "^5.3.3",
+    "element-plus": "^2.7.4",
     "vue": "^3.4.21",
+    "vue-demi": "^0.14.8",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
@@ -30,6 +33,8 @@
     "npm-run-all2": "^6.1.2",
     "prettier": "^3.2.5",
     "typescript": "~5.4.0",
+    "unplugin-auto-import": "^0.17.6",
+    "unplugin-vue-components": "^0.27.0",
     "vite": "^5.2.8",
     "vue-tsc": "^2.0.11"
   }
