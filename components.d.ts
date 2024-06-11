@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     ElButton: typeof import('element-plus/es')['ElButton']
     ElTree: typeof import('element-plus/es')['ElTree']
+    MyMonacoEditor: typeof import('./src/components/MyMonacoEditor.vue')['default']
     RequestAction: typeof import('./src/components/RequestAction.vue')['default']
     RequestTree: typeof import('./src/components/RequestTree.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
