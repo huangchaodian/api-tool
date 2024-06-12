@@ -4,7 +4,7 @@ import { nextTick, watch } from 'vue'
 
 const props = defineProps<{
   editorId: string
-  value: string
+  text: string
   language: string
   height: number | string
 }>()
@@ -27,23 +27,23 @@ nextTick(() => {
   if (editorDom !== null) {
     if (props.language === 'text') {
       editInstance = monaco.editor.create(editorDom, {
-        model: monaco.editor.createModel(props.value, props.language)
+        model: monaco.editor.createModel(props.text, props.language)
       })
     } else if (props.language === 'json') {
       editInstance = monaco.editor.create(editorDom, {
-        model: getJsonModel(props.value)
+        model: getJsonModel(props.text)
       })
     }
   }
 })
 watch(
-  () => props.value,
+  () => props.text,
   () => {
     if (editInstance) {
       if (props.language === 'text') {
-        editInstance.setModel(monaco.editor.createModel(props.value, props.language))
+        editInstance.setModel(monaco.editor.createModel(props.text, props.language))
       } else if (props.language === 'json') {
-        editInstance.setModel(getJsonModel(props.value))
+        editInstance.setModel(getJsonModel(props.text))
       }
     }
   }

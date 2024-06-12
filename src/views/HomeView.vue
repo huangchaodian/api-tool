@@ -44,15 +44,6 @@ onMessage(requests.value)
 const treeData = computed(() => {
   return getTreeData(requests.value)
 })
-const url = computed(() => {
-  return selectedRequest?.value?.url || ''
-})
-const requestBody = computed(() => {
-  return selectedRequest?.value?.requestBody || 'null'
-})
-const responseBody = computed(() => {
-  return selectedRequest?.value?.responseBody || 'null'
-})
 
 const handleNodeClick = (data: number) => {
   if (data >= 0) {
@@ -101,15 +92,15 @@ const handleDiff = () => {
           editor-id="monaco-edit-url"
           ref="monacoEditUrl"
           language="text"
-          :value="url"
+          :text="selectedRequest?.url || ''"
           :height="40"
         ></MyMonacoEditor>
         <MyMonacoDiffEditor
           v-if="showDiff"
           editor-id="monaco-diff-edit-url"
           language="text"
-          :original="selectedCopyedRequest?.url"
-          :modified="selectedRequest?.url"
+          :original="selectedCopyedRequest?.url || ''"
+          :modified="selectedRequest?.url || ''"
           :height="40"
         ></MyMonacoDiffEditor>
       </div>
@@ -119,15 +110,15 @@ const handleDiff = () => {
           editor-id="monaco-edit-req"
           ref="monacoEditReq"
           language="json"
-          :value="requestBody"
+          :text="selectedRequest?.requestBody || ''"
           :height="200"
         ></MyMonacoEditor>
         <MyMonacoDiffEditor
           v-if="showDiff"
           editor-id="monaco-diff-edit-req"
           language="json"
-          :original="selectedCopyedRequest?.requestBody"
-          :modified="selectedRequest?.requestBody"
+          :original="selectedCopyedRequest?.requestBody || ''"
+          :modified="selectedRequest?.requestBody || ''"
           :height="200"
         ></MyMonacoDiffEditor>
       </div>
@@ -136,15 +127,15 @@ const handleDiff = () => {
           v-if="!showDiff"
           editor-id="monaco-edit-resp"
           language="json"
-          :value="responseBody"
+          :text="selectedRequest?.responseBody || ''"
           height="calc(100vh - 340px)"
         ></MyMonacoEditor>
         <MyMonacoDiffEditor
           v-if="showDiff"
           editor-id="monaco-diff-edit-resp"
           language="json"
-          :original="selectedCopyedRequest?.responseBody"
-          :modified="selectedRequest?.responseBody"
+          :original="selectedCopyedRequest?.responseBody || ''"
+          :modified="selectedRequest?.responseBody || ''"
           height="calc(100vh - 340px)"
         ></MyMonacoDiffEditor>
       </div>

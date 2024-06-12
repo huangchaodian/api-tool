@@ -8,7 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ElButton: typeof import('element-plus/es')['ElButton']
-    ElIcon: typeof import('element-plus/es')['ElIcon']
     ElTree: typeof import('element-plus/es')['ElTree']
     MyMonacoDiffEditor: typeof import('./src/components/editor/MyMonacoDiffEditor.vue')['default']
     MyMonacoEditor: typeof import('./src/components/editor/MyMonacoEditor.vue')['default']
