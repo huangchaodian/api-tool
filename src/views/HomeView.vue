@@ -51,7 +51,7 @@ const handleNodeClick = (data: number) => {
     showDiff.value = false
   }
 }
-const handleReply = () => {
+const handleReply = async () => {
   let method = selectedRequest.value?.method || 'GET'
   const request: MyRequest = {
     url: monacoEditUrl?.value?.getEditorValue(),
@@ -60,7 +60,10 @@ const handleReply = () => {
   if (method === 'POST') {
     request.requestBody = monacoEditReq?.value?.getEditorValue()
   }
-  replay(request, requests.value)
+  const data = await replay(request)
+  request.responseBody = data
+  requests.value.push(request)
+  selectedIndex.value = requests.value.length - 1
 }
 const handleCopy = () => {
   if (selectedIndex.value >= 0) {

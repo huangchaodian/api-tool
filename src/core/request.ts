@@ -61,7 +61,7 @@ export function onMessage(requests: MyRequest[]) {
       return true
     })
 }
-export function replay(request: MyRequest, requestList: MyRequest[]) {
+export async function replay(request: MyRequest) {
   const config = {
     method: request.method,
     headers: {},
@@ -74,12 +74,10 @@ export function replay(request: MyRequest, requestList: MyRequest[]) {
     config.body = request.requestBody
   }
   console.log(request, config)
-  fetch(request.url, config)
-    .then((response) => response.text())
-    .then((data) => {
-      console.log(data)
-      request.responseBody = data
-      requestList.push(request)
-    })
-    .catch((error) => console.error(error))
+  const response = await fetch(request.url, config)
+  // if (response.ok) {
+  //   return 'An error has occured:' + response.status
+  // }
+  const data = await response.text()
+  return data
 }
