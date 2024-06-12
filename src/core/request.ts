@@ -40,7 +40,8 @@ export function onMessage(requests: MyRequest[]) {
     chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       //(request, sender, sendResponse)
       const e = request.data
-      if (e.type !== 'xhr') return
+      if (e.type !== 'xhr' && e.type !== 'fetch') return
+      // console.log(e)
       const urlStr = e.url.replace(/^\/\//, e.protocol + '//')
       const item: MyRequest = {
         url: urlStr,
