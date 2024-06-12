@@ -14,6 +14,14 @@ const getEditorValue = () => {
 }
 defineExpose({ getEditorValue })
 
+const getJsonModel = (data: string) => {
+  try {
+    return monaco.editor.createModel(JSON.stringify(JSON.parse(data), null, '\t'), 'json')
+  } catch (e) {
+    console.log(e)
+  }
+  return monaco.editor.createModel(data, 'text')
+}
 nextTick(() => {
   let editorDom = document.getElementById(props.editorId)
   if (editorDom !== null) {
@@ -23,10 +31,7 @@ nextTick(() => {
       })
     } else if (props.language === 'json') {
       editInstance = monaco.editor.create(editorDom, {
-        model: monaco.editor.createModel(
-          JSON.stringify(JSON.parse(props.value), null, '\t'),
-          props.language
-        )
+        model: getJsonModel(props.value)
       })
     }
   }
@@ -38,12 +43,7 @@ watch(
       if (props.language === 'text') {
         editInstance.setModel(monaco.editor.createModel(props.value, props.language))
       } else if (props.language === 'json') {
-        editInstance.setModel(
-          monaco.editor.createModel(
-            JSON.stringify(JSON.parse(props.value), null, '\t'),
-            props.language
-          )
-        )
+        editInstance.setModel(getJsonModel(props.value))
       }
     }
   }

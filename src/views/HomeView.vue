@@ -40,13 +40,16 @@ const responseBody = computed(() => {
 
 const handleNodeClick = (data: number) => {
   data ? (selectedRequest.value = requests.value[data]) : null
+  console.log(selectedRequest.value)
 }
 const handleReply = () => {
-  console.log(monacoEditReq?.value?.getEditorValue())
+  let method = selectedRequest.value?.method || 'GET'
   const request: MyRequest = {
     url: monacoEditUrl?.value?.getEditorValue(),
-    method: 'POST',
-    requestBody: monacoEditReq?.value?.getEditorValue()
+    method: method
+  }
+  if (method === 'POST') {
+    request.requestBody = monacoEditReq?.value?.getEditorValue()
   }
   replay(request, requests.value)
 }
@@ -65,7 +68,7 @@ const handleReply = () => {
           ref="monacoEditUrl"
           language="text"
           :value="url"
-          :height="20"
+          :height="40"
         ></MyMonacoEditor>
       </div>
       <div class="request-body">
@@ -95,6 +98,8 @@ const handleReply = () => {
 }
 .left-tree {
   width: 20%;
+  height: calc(100vh - 100px);
+  overflow: scroll;
 }
 .right-content {
   width: 80%;

@@ -1,7 +1,8 @@
 /// <reference types="chrome"/>
 export function getTreeData(requests: MyRequest[]): MyTree[] {
-  console.log(requests)
+  // console.log(requests)
   const tree: MyTree[] = []
+  let nodeSeq = 1
   for (const i in requests) {
     const r = requests[i]
     const url = new URL(r.url)
@@ -10,6 +11,7 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
 
     if (!tree.map((e) => e.label).includes(host)) {
       tree.push({
+        _seq: nodeSeq++,
         label: host,
         children: []
       })
@@ -20,11 +22,13 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
       const path = paths[j]
       if (parseInt(j) === paths.length - 1) {
         children.push({
+          _seq: nodeSeq++,
           id: i,
           label: path
         })
       } else if (!children.map((e) => e.label).includes(path)) {
         children.push({
+          _seq: nodeSeq++,
           label: path,
           children: []
         })
@@ -41,7 +45,7 @@ export function onMessage(requests: MyRequest[]) {
       //(request, sender, sendResponse)
       const e = request.data
       if (e.type !== 'xhr' && e.type !== 'fetch') return
-      // console.log(e)
+      console.log(e)
       const urlStr = e.url.replace(/^\/\//, e.protocol + '//')
       const item: MyRequest = {
         url: urlStr,
@@ -49,6 +53,7 @@ export function onMessage(requests: MyRequest[]) {
         requestBody: e.requestData,
         responseBody: e.responseData
       }
+      console.log(item)
       requests.push(item)
       setTimeout(function () {
         sendResponse(true)
@@ -57,24 +62,23 @@ export function onMessage(requests: MyRequest[]) {
     })
 }
 export function replay(request: MyRequest, requestList: MyRequest[]) {
-  let config = {
+  const config = {
     method: request.method,
     headers: {},
     body: request.requestBody
   }
   if (request.method === 'POST') {
-    config = {
-      ...config,
-      headers: {
-        'Content-Type': 'application/json;'
-      }
+    config.headers = {
+      'Content-Type': 'application/json;'
     }
+    config.body = request.requestBody
   }
+  console.log(request, config)
   fetch(request.url, config)
-    .then((response) => response.json())
+    .then((response) => response.text())
     .then((data) => {
       console.log(data)
-      request.responseBody = JSON.stringify(data)
+      request.responseBody = data
       requestList.push(request)
     })
     .catch((error) => console.error(error))

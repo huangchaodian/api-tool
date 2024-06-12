@@ -31,7 +31,13 @@
 const { fetch: origFetch } = window
 window.fetch = async (...args) => {
   const response = await origFetch(...args)
-  console.log('injected script fetch request:', args)
+  //   console.log('injected script fetch request:', args)
+  var url = args[0]
+  if (url.substr(0, 2) === '//') {
+    url = window.location.protocol + url
+  } else if (url.substr(0, 1) === '/') {
+    url = window.location.protocol + '//' + window.location.host + url
+  }
   var method = 'GET'
   if (args.length >= 1 && args[1] && args[1].method) {
     method = args[1].method
@@ -43,17 +49,16 @@ window.fetch = async (...args) => {
 
   response
     .clone()
-    .json()
+    .text()
     // .blob() // maybe json(), text(), blob()
     .then((data) => {
-      console.log(data)
       window.postMessage(
         {
           type: 'fetch',
           method: method,
-          url: args[0],
+          url: url,
           requestData: body,
-          responseData: JSON.stringify(data)
+          responseData: data
         },
         '*'
       ) // send to content script
