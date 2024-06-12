@@ -19,9 +19,25 @@ const requests = ref<MyRequest[]>([
   //   responseBody: '{"c":7,"d":8}'
   // }
 ])
-const selectedRequest = ref<MyRequest>()
+//editor
+const selectedIndex = ref(-1)
+const selectedRequest = computed(() => {
+  if (selectedIndex.value >= 0) {
+    return requests.value[selectedIndex.value]
+  }
+  return null
+})
 const monacoEditUrl = ref()
 const monacoEditReq = ref()
+//diff editor
+const showDiff = ref(false)
+const selectedCopyIndex = ref(-1)
+const selectedCopyedRequest = computed(() => {
+  if (selectedCopyIndex.value >= 0) {
+    return requests.value[selectedCopyIndex.value]
+  }
+  return null
+})
 
 onMessage(requests.value)
 
@@ -39,8 +55,10 @@ const responseBody = computed(() => {
 })
 
 const handleNodeClick = (data: number) => {
-  data ? (selectedRequest.value = requests.value[data]) : null
-  console.log(selectedRequest.value)
+  if (data >= 0) {
+    selectedIndex.value = data
+    showDiff.value = false
+  }
 }
 const handleReply = () => {
   let method = selectedRequest.value?.method || 'GET'
@@ -53,40 +71,82 @@ const handleReply = () => {
   }
   replay(request, requests.value)
 }
+const handleCopy = () => {
+  if (selectedIndex.value >= 0) {
+    selectedCopyIndex.value = selectedIndex.value
+  }
+}
+const handleDiff = () => {
+  showDiff.value = !showDiff.value
+}
 </script>
 
 <template>
   <div class="home-view">
     <div class="left-tree">
-      <RequestTree :data="treeData" @request-click="handleNodeClick"></RequestTree>
+      <RequestTree
+        :data="treeData"
+        :selected="selectedIndex"
+        :copied="selectedCopyIndex"
+        @request-click="handleNodeClick"
+      ></RequestTree>
     </div>
     <div class="right-content">
-      <div class="action"><RequestAction @replay="handleReply"></RequestAction></div>
+      <div class="action">
+        <RequestAction @replay="handleReply" @copy="handleCopy" @diff="handleDiff"></RequestAction>
+      </div>
       <div class="request-url">
         <MyMonacoEditor
+          v-if="!showDiff"
           editor-id="monaco-edit-url"
           ref="monacoEditUrl"
           language="text"
           :value="url"
           :height="40"
         ></MyMonacoEditor>
+        <MyMonacoDiffEditor
+          v-if="showDiff"
+          editor-id="monaco-diff-edit-url"
+          language="text"
+          :original="selectedCopyedRequest?.url"
+          :modified="selectedRequest?.url"
+          :height="40"
+        ></MyMonacoDiffEditor>
       </div>
       <div class="request-body">
         <MyMonacoEditor
+          v-if="!showDiff"
           editor-id="monaco-edit-req"
           ref="monacoEditReq"
           language="json"
           :value="requestBody"
           :height="200"
         ></MyMonacoEditor>
+        <MyMonacoDiffEditor
+          v-if="showDiff"
+          editor-id="monaco-diff-edit-req"
+          language="json"
+          :original="selectedCopyedRequest?.requestBody"
+          :modified="selectedRequest?.requestBody"
+          :height="200"
+        ></MyMonacoDiffEditor>
       </div>
       <div class="response">
         <MyMonacoEditor
+          v-if="!showDiff"
           editor-id="monaco-edit-resp"
           language="json"
           :value="responseBody"
           height="calc(100vh - 340px)"
         ></MyMonacoEditor>
+        <MyMonacoDiffEditor
+          v-if="showDiff"
+          editor-id="monaco-diff-edit-resp"
+          language="json"
+          :original="selectedCopyedRequest?.responseBody"
+          :modified="selectedRequest?.responseBody"
+          height="calc(100vh - 340px)"
+        ></MyMonacoDiffEditor>
       </div>
     </div>
   </div>

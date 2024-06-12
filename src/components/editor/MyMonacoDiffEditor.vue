@@ -4,15 +4,12 @@ import { nextTick, watch } from 'vue'
 
 const props = defineProps<{
   editorId: string
-  value: string
+  original: string
+  modified: string
   language: string
   height: number | string
 }>()
-let editInstance: monaco.editor.IStandaloneCodeEditor | null = null
-const getEditorValue = () => {
-  return editInstance?.getModel()?.getValue()
-}
-defineExpose({ getEditorValue })
+let diffEditInstance: monaco.editor.IStandaloneDiffEditor | null = null
 
 const getJsonModel = (data: string) => {
   try {
@@ -25,25 +22,34 @@ const getJsonModel = (data: string) => {
 nextTick(() => {
   let editorDom = document.getElementById(props.editorId)
   if (editorDom !== null) {
+    diffEditInstance = monaco.editor.createDiffEditor(editorDom)
     if (props.language === 'text') {
-      editInstance = monaco.editor.create(editorDom, {
-        model: monaco.editor.createModel(props.value, props.language)
+      diffEditInstance.setModel({
+        original: monaco.editor.createModel(props.original, props.language),
+        modified: monaco.editor.createModel(props.modified, props.language)
       })
     } else if (props.language === 'json') {
-      editInstance = monaco.editor.create(editorDom, {
-        model: getJsonModel(props.value)
+      diffEditInstance.setModel({
+        original: getJsonModel(props.original),
+        modified: getJsonModel(props.modified)
       })
     }
   }
 })
 watch(
-  () => props.value,
+  () => [props.original, props.modified],
   () => {
-    if (editInstance) {
+    if (diffEditInstance) {
       if (props.language === 'text') {
-        editInstance.setModel(monaco.editor.createModel(props.value, props.language))
+        diffEditInstance.setModel({
+          original: monaco.editor.createModel(props.original, props.language),
+          modified: monaco.editor.createModel(props.modified, props.language)
+        })
       } else if (props.language === 'json') {
-        editInstance.setModel(getJsonModel(props.value))
+        diffEditInstance.setModel({
+          original: getJsonModel(props.original),
+          modified: getJsonModel(props.modified)
+        })
       }
     }
   }

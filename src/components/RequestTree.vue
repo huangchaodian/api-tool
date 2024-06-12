@@ -6,10 +6,12 @@ const defaultProps = {
 }
 defineProps<{
   data: MyTree[]
+  selected: number
+  copied: number
 }>()
 const emit = defineEmits(['request-click'])
 const handleNodeClick = (data: MyTree) => {
-  if (data.id) {
+  if (data.id !== undefined) {
     emit('request-click', data.id)
   }
 }
@@ -39,5 +41,13 @@ const getExtendNode = () => {
     @node-collapse="getExtendNode"
     :default-expanded-keys="defaultExpendKeys"
     :auto-expand-parent="false"
-  ></el-tree>
+  >
+    <template v-slot="{ node, data }">
+      <span class="custom-tree-node">
+        <span style="color: #a2e701" v-if="data.id === selected"> > </span>
+        <span style="color: #e51c02" v-if="data.id === copied"> > </span>
+        <span>{{ node.label }}</span>
+      </span>
+    </template>
+  </el-tree>
 </template>

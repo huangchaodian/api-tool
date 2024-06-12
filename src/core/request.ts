@@ -23,7 +23,7 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
       if (parseInt(j) === paths.length - 1) {
         children.push({
           _seq: nodeSeq++,
-          id: i,
+          id: parseInt(i),
           label: path
         })
       } else if (!children.map((e) => e.label).includes(path)) {
