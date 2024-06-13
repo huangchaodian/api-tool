@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
+import { type MyTree } from '@/core/request'
 const defaultProps = {
   children: 'children',
   label: 'label'

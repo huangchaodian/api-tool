@@ -2,8 +2,9 @@
 import RequestTree from '@/components/RequestTree.vue'
 import RequestAction from '@/components/RequestAction.vue'
 import MyMonacoEditor from '@/components/editor/MyMonacoEditor.vue'
-import { ref, computed } from 'vue'
-import { getTreeData, onMessage, replay } from '../core/request'
+import { ref, computed, nextTick } from 'vue'
+import { getTreeData, onMessage, replay, type MyRequest } from '../core/request'
+import { resizeDiv } from '../components/resize/resizeDiv'
 
 const requests = ref<MyRequest[]>([
   // {
@@ -50,6 +51,7 @@ const handleNodeClick = (data: number) => {
     selectedIndex.value = data
     showDiff.value = false
   }
+  console.log(selectedRequest)
 }
 const handleReply = async () => {
   let method = selectedRequest.value?.method || 'GET'
@@ -73,6 +75,9 @@ const handleCopy = () => {
 const handleDiff = () => {
   showDiff.value = !showDiff.value
 }
+nextTick(() => {
+  resizeDiv('home-view', 'left-tree', 'resize', 'right-content')
+})
 </script>
 
 <template>
@@ -84,6 +89,9 @@ const handleDiff = () => {
         :copied="selectedCopyIndex"
         @request-click="handleNodeClick"
       ></RequestTree>
+    </div>
+    <div>
+      <div class="resize" title="收缩侧边栏">⋮</div>
     </div>
     <div class="right-content">
       <div class="action">
@@ -154,9 +162,29 @@ const handleDiff = () => {
   width: 20%;
   height: calc(100vh - 100px);
   overflow: scroll;
+  overflow-y: scroll;
+}
+.resize {
+  cursor: col-resize;
+  float: left;
+  position: relative;
+  top: 45%;
+  background-color: #d6d6d6;
+  border-radius: 5px;
+  margin-top: -10px;
+  width: 8px;
+  height: 32px;
+  background-size: cover;
+  background-position: center;
+  font-size: 18px;
+  color: white;
+}
+/*拖拽区鼠标悬停样式*/
+.resize:hover {
+  color: #444444;
 }
 .right-content {
-  width: 80%;
+  width: calc(80% - 10px);
 }
 .action {
   padding-left: 24px;

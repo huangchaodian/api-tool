@@ -13,11 +13,17 @@
   XHR.send = function (postData) {
     // console.log('injected script xhr request:', this._method, this._url, this.getAllResponseHeaders(), postData);
     this.addEventListener('load', function () {
+      var url = this._url
+      if (url.substr(0, 2) === '//') {
+        url = window.location.protocol + url
+      } else if (url.substr(0, 1) === '/') {
+        url = window.location.protocol + '//' + window.location.host + url
+      }
       window.postMessage(
         {
           type: 'xhr',
           method: this._method,
-          url: this._url,
+          url: url,
           requestData: postData,
           responseData: this.response
         },

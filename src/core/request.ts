@@ -1,41 +1,78 @@
 /// <reference types="chrome"/>
+export interface MyTree {
+  _seq?: number
+  id?: number
+  label: string
+  children?: MyTree[]
+}
+export interface MyRequest {
+  url: string
+  method: string
+  requestBody?: string
+  responseBody?: string
+}
+
 export function getTreeData(requests: MyRequest[]): MyTree[] {
   // console.log(requests)
   const tree: MyTree[] = []
   let nodeSeq = 1
   for (const i in requests) {
-    const r = requests[i]
-    const url = new URL(r.url)
-    const host = url.host
-    const uri = url.pathname
+    try {
+      const r = requests[i]
 
-    if (!tree.map((e) => e.label).includes(host)) {
-      tree.push({
-        _seq: nodeSeq++,
-        label: host,
-        children: []
-      })
-    }
-    const paths = uri.split('/').slice(1)
-    let children = tree.find((e) => e.label === host)?.children || []
-    for (const j in paths) {
-      const path = paths[j]
-      if (parseInt(j) === paths.length - 1) {
-        children.push({
-          _seq: nodeSeq++,
-          id: parseInt(i),
-          label: path
-        })
-      } else if (!children.map((e) => e.label).includes(path)) {
-        children.push({
-          _seq: nodeSeq++,
-          label: path,
-          children: []
-        })
+      let url = new URL(r.url)
+      let host = url.host
+      if (url.protocol === 'blob:') {
+        url = new URL(r.url.replace('blob:', ''))
+        host = 'blob:' + url.host
       }
-      children = children.find((e) => e.label === path).children
+      const search = url.search
+      let uri = url.pathname
+      if (uri.substr(0, 1) !== '/') {
+        uri = '/' + uri
+      }
+
+      let hostNode = tree.find((e) => e.label === host)
+      if (!hostNode) {
+        hostNode = {
+          _seq: nodeSeq++,
+          label: host,
+          children: []
+        }
+        tree.push(hostNode)
+      }
+
+      const paths = uri.split('/').slice(1)
+      let children = hostNode.children || []
+      for (const j in paths) {
+        const path = paths[j]
+        let node: MyTree | undefined
+        if (parseInt(j) === paths.length - 1) {
+          node = {
+            _seq: nodeSeq++,
+            id: parseInt(i),
+            label: path + search
+          }
+          children.push(node)
+          continue
+        } else {
+          node = tree.find((e) => e.label === path && e.id === undefined)
+          if (!node) {
+            node = {
+              _seq: nodeSeq++,
+              label: path,
+              children: []
+            }
+            children.push(node)
+          }
+          children = node.children || []
+        }
+      }
+    } catch (e) {
+      console.log(requests[i], e)
     }
   }
+  console.log(requests, tree)
   return tree
 }
 
@@ -46,9 +83,8 @@ export function onMessage(requests: MyRequest[]) {
       const e = request.data
       if (e.type !== 'xhr' && e.type !== 'fetch') return
       console.log(e)
-      const urlStr = e.url.replace(/^\/\//, e.protocol + '//')
       const item: MyRequest = {
-        url: urlStr,
+        url: e.url,
         method: e.method,
         requestBody: e.requestData,
         responseBody: e.responseData
@@ -75,9 +111,9 @@ export async function replay(request: MyRequest) {
   }
   console.log(request, config)
   const response = await fetch(request.url, config)
-  // if (response.ok) {
-  //   return 'An error has occured:' + response.status
-  // }
+  if (!response.ok) {
+    return 'An error has occured:' + response.status
+  }
   const data = await response.text()
   return data
 }
