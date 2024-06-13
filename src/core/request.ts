@@ -63,7 +63,7 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
               label: path,
               children: []
             }
-            children.push(node)
+            children.splice(children.filter((e) => e.id === undefined).length, 0, node)
           }
           children = node.children || []
         }
@@ -72,7 +72,6 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
       console.log(requests[i], e)
     }
   }
-  console.log(requests, tree)
   return tree
 }
 
@@ -82,14 +81,13 @@ export function onMessage(requests: MyRequest[]) {
       //(request, sender, sendResponse)
       const e = request.data
       if (e.type !== 'xhr' && e.type !== 'fetch') return
-      console.log(e)
       const item: MyRequest = {
         url: e.url,
         method: e.method,
         requestBody: e.requestData,
         responseBody: e.responseData
       }
-      console.log(item)
+      // console.log(item)
       requests.push(item)
       setTimeout(function () {
         sendResponse(true)
