@@ -56,7 +56,7 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
           children.push(node)
           continue
         } else {
-          node = tree.find((e) => e.label === path && e.id === undefined)
+          node = children.find((e) => e.label === path && e.id === undefined)
           if (!node) {
             node = {
               _seq: nodeSeq++,
