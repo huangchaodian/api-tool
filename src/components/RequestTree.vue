@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, toRaw } from 'vue'
 import { type MyTree } from '@/core/request'
 interface _Node {
   expanded: boolean

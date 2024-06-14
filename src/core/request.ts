@@ -11,6 +11,7 @@ export interface MyRequest {
   method: string
   headers?: [string, string][]
   requestBody?: string
+  responseContentType?: string
   responseBody?: string
 }
 
@@ -92,26 +93,23 @@ export function onMessage(requests: MyRequest[]) {
         method: e.method,
         headers: e.headers,
         requestBody: e.requestData,
+        responseContentType: e.responseContentType,
         responseBody: e.responseData
       }
-      // console.log(item)
+      console.log(item)
       requests.push(item)
       // setTimeout(function () {
       // }, 1)
     })
 }
 export async function replay(request: MyRequest) {
-  const config = {
+  const config: RequestInit = {
     method: request.method,
-    headers: request.headers,
-    body: request.requestBody
+    headers: request.headers
   }
-  // if (request.method === 'POST') {
-  //   config.headers[] = {
-  //     'Content-Type': 'application/json;'
-  //   }
-  //   config.body = request.requestBody
-  // }
+  if (request.method === 'POST') {
+    config.body = request.requestBody
+  }
   console.log(request, config)
   const response = await fetch(request.url, config)
   if (!response.ok) {

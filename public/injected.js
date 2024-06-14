@@ -35,6 +35,7 @@
           url: url,
           headers: this._headers,
           requestData: postData,
+          responseContentType: this.getResponseHeader('Content-Type'),
           responseData: this.response
         }
         window.postMessage(message, '*') // send to content script
@@ -49,17 +50,22 @@
 
 const { fetch: origFetch } = window
 window.fetch = async (...args) => {
+  // console.log(...args)
   const response = await origFetch(...args)
   try {
-    var url = ''
+    var url = args[0]
     var method = 'GET'
     var body = null
     var headers = null
+    var contentType = response.headers.get('Content-Type')
 
     if (Object.getPrototypeOf(args[0])[Symbol.toStringTag] === 'Request') {
       url = args[0].url
       method = args[0].method
-      headers = args[0].headers
+      headers = {}
+      args[0].headers.forEach((v, k) => {
+        headers[k] = v
+      })
       body = args[0].body
     } else if (Object.getPrototypeOf(args[0])[Symbol.toStringTag] === 'URL') {
       url = args[0].origin
@@ -78,7 +84,10 @@ window.fetch = async (...args) => {
       body = args[1].body
     }
     if (args.length >= 1 && args[1] && args[1].headers) {
-      headers = args[1].headers
+      headers = {}
+      args[0].headers.forEach((v, k) => {
+        headers[k] = v
+      })
     }
 
     response
@@ -90,11 +99,13 @@ window.fetch = async (...args) => {
           type: 'fetch',
           method: method,
           url: url,
-          headers: JSON.parse(JSON.stringify(headers)),
+          headers: headers,
           requestData: body,
+          responseContentType: contentType,
           responseData: data
         }
         window.postMessage(message, '*') // send to content script
+        // console.log(message)
         //window.postMessage({ type: 'fetch', data: URL.createObjectURL(data) }, '*'); // if a big media file, can createObjectURL before send to content script
       })
       .catch((err) => console.error(err))

@@ -2,7 +2,7 @@
 import RequestTree from '@/components/RequestTree.vue'
 import RequestAction from '@/components/RequestAction.vue'
 import MyMonacoEditor from '@/components/editor/MyMonacoEditor.vue'
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, toRaw } from 'vue'
 import { getTreeData, onMessage, replay, type MyRequest } from '../core/request'
 import { resizeDiv } from '../components/resize/resizeDiv'
 
@@ -58,7 +58,7 @@ const handleReply = async () => {
   const request: MyRequest = {
     url: monacoEditUrl?.value?.getEditorValue(),
     method: method,
-    headers: selectedRequest.value?.headers
+    headers: toRaw(selectedRequest.value?.headers)
   }
   if (method === 'POST') {
     request.requestBody = monacoEditReq?.value?.getEditorValue()

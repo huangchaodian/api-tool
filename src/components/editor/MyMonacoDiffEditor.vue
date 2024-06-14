@@ -15,7 +15,7 @@ const getJsonModel = (data: string) => {
   try {
     return monaco.editor.createModel(JSON.stringify(JSON.parse(data), null, '\t'), 'json')
   } catch (e) {
-    console.log(e)
+    // console.log(e)
   }
   return monaco.editor.createModel(data, 'text')
 }
