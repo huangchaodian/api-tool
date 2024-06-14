@@ -19,11 +19,9 @@ window.addEventListener('message', function (e) {
           protocol: document.location.protocol
         }
       },
-      {},
       function () {
-        // 收到回复后在页面弹出提醒
-        // console.log(res);
-        return true
+        if (!chrome.runtime.lastError) {
+        }
       }
     )
   } catch (e) {
