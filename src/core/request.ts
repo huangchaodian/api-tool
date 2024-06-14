@@ -2,12 +2,14 @@
 export interface MyTree {
   _seq?: number
   id?: number
+  typ: string
   label: string
   children?: MyTree[]
 }
 export interface MyRequest {
   url: string
   method: string
+  headers?: [string, string][]
   requestBody?: string
   responseBody?: string
 }
@@ -37,6 +39,7 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
         hostNode = {
           _seq: nodeSeq++,
           label: host,
+          typ: 'host',
           children: []
         }
         tree.push(hostNode)
@@ -51,16 +54,18 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
           node = {
             _seq: nodeSeq++,
             id: parseInt(i),
-            label: path + search
+            label: path + search || '/',
+            typ: 'param'
           }
           children.push(node)
           continue
         } else {
-          node = children.find((e) => e.label === path && e.id === undefined)
+          node = children.find((e) => e.label === path && e.typ === 'path')
           if (!node) {
             node = {
               _seq: nodeSeq++,
               label: path,
+              typ: 'path',
               children: []
             }
             children.splice(children.filter((e) => e.id === undefined).length, 0, node)
@@ -78,35 +83,35 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
 export function onMessage(requests: MyRequest[]) {
   chrome.runtime &&
     chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
+      sendResponse(true)
       //(request, sender, sendResponse)
       const e = request.data
       if (e.type !== 'xhr' && e.type !== 'fetch') return
       const item: MyRequest = {
         url: e.url,
         method: e.method,
+        headers: e.headers,
         requestBody: e.requestData,
         responseBody: e.responseData
       }
       // console.log(item)
       requests.push(item)
-      setTimeout(function () {
-        sendResponse(true)
-      }, 1)
-      return true
+      // setTimeout(function () {
+      // }, 1)
     })
 }
 export async function replay(request: MyRequest) {
   const config = {
     method: request.method,
-    headers: {},
+    headers: request.headers,
     body: request.requestBody
   }
-  if (request.method === 'POST') {
-    config.headers = {
-      'Content-Type': 'application/json;'
-    }
-    config.body = request.requestBody
-  }
+  // if (request.method === 'POST') {
+  //   config.headers[] = {
+  //     'Content-Type': 'application/json;'
+  //   }
+  //   config.body = request.requestBody
+  // }
   console.log(request, config)
   const response = await fetch(request.url, config)
   if (!response.ok) {

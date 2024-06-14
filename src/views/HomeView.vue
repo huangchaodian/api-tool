@@ -57,7 +57,8 @@ const handleReply = async () => {
   let method = selectedRequest.value?.method || 'GET'
   const request: MyRequest = {
     url: monacoEditUrl?.value?.getEditorValue(),
-    method: method
+    method: method,
+    headers: selectedRequest.value?.headers
   }
   if (method === 'POST') {
     request.requestBody = monacoEditReq?.value?.getEditorValue()
@@ -97,7 +98,7 @@ nextTick(() => {
       <div class="action">
         <RequestAction @replay="handleReply" @copy="handleCopy" @diff="handleDiff"></RequestAction>
       </div>
-      <div class="request-url">
+      <div class="request-url" v-if="selectedIndex !== -1">
         <MyMonacoEditor
           v-if="!showDiff"
           editor-id="monaco-edit-url"
@@ -115,7 +116,7 @@ nextTick(() => {
           :height="40"
         ></MyMonacoDiffEditor>
       </div>
-      <div class="request-body">
+      <div class="request-body" v-if="selectedIndex !== -1">
         <MyMonacoEditor
           v-if="!showDiff"
           editor-id="monaco-edit-req"
@@ -133,7 +134,7 @@ nextTick(() => {
           :height="200"
         ></MyMonacoDiffEditor>
       </div>
-      <div class="response">
+      <div class="response" v-if="selectedIndex !== -1">
         <MyMonacoEditor
           v-if="!showDiff"
           editor-id="monaco-edit-resp"
@@ -159,7 +160,7 @@ nextTick(() => {
   display: flex;
 }
 .left-tree {
-  width: 20%;
+  width: 30%;
   height: calc(100vh - 100px);
   overflow: scroll;
   overflow-y: scroll;
@@ -184,7 +185,7 @@ nextTick(() => {
   color: #444444;
 }
 .right-content {
-  width: calc(80% - 10px);
+  width: calc(70% - 10px);
 }
 .action {
   padding-left: 24px;

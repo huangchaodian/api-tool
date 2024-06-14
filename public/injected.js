@@ -3,6 +3,15 @@
 
   var open = XHR.open
   var send = XHR.send
+  var setRequestHeader = XHR.setRequestHeader
+
+  XHR.setRequestHeader = function (header, value) {
+    if (!this._headers) {
+      this._headers = {}
+    }
+    this._headers[header] = value
+    return setRequestHeader.apply(this, arguments)
+  }
 
   XHR.open = function (method, url) {
     this._method = method
@@ -19,16 +28,20 @@
       } else if (url.substr(0, 1) === '/') {
         url = window.location.protocol + '//' + window.location.host + url
       }
-      window.postMessage(
-        {
-          type: 'xhr',
-          method: this._method,
-          url: url,
-          requestData: postData,
-          responseData: this.response
-        },
-        '*'
-      ) // send to content script
+      var message = {
+        type: 'xhr',
+        method: this._method,
+        url: url,
+        headers: this._headers,
+        requestData: postData,
+        responseData: this.response
+      }
+      try {
+        window.postMessage(message, '*') // send to content script
+      } catch (e) {
+        // console.log(e)
+      }
+      // console.log(message)
     })
     return send.apply(this, arguments)
   }
@@ -52,22 +65,29 @@ window.fetch = async (...args) => {
   if (args.length >= 1 && args[1] && args[1].body) {
     body = args[1].body
   }
+  var headers = null
+  if (args.length >= 1 && args[1] && args[1].headers) {
+    headers = args[1].headers
+  }
 
   response
     .clone()
     .text()
     // .blob() // maybe json(), text(), blob()
     .then((data) => {
-      window.postMessage(
-        {
-          type: 'fetch',
-          method: method,
-          url: url,
-          requestData: body,
-          responseData: data
-        },
-        '*'
-      ) // send to content script
+      var message = {
+        type: 'fetch',
+        method: method,
+        url: url,
+        headers: headers,
+        requestData: body,
+        responseData: data
+      }
+      try {
+        window.postMessage(message, '*') // send to content script
+      } catch (e) {
+        // console.log(e)
+      }
       //window.postMessage({ type: 'fetch', data: URL.createObjectURL(data) }, '*'); // if a big media file, can createObjectURL before send to content script
     })
     .catch((err) => console.error(err))

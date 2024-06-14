@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
 import { type MyTree } from '@/core/request'
+interface _Node {
+  expanded: boolean
+  childNodes: _Node[]
+}
 const defaultProps = {
   children: 'children',
   label: 'label'
@@ -18,8 +22,12 @@ const handleNodeClick = (data: MyTree) => {
 }
 const myElTree = ref()
 const defaultExpendKeys = ref<number[]>([])
-const getExtendNode = () => {
+const getExtendNode = (data: object, node: _Node, item: object) => {
   nextTick(() => {
+    while (node.expanded && node.childNodes && node.childNodes.length === 1) {
+      node = node.childNodes[0]
+      node.expanded = true
+    }
     let nodes = myElTree.value.store._getAllNodes()
     let extended: number[] = []
     nodes.forEach(
@@ -45,6 +53,12 @@ const getExtendNode = () => {
   >
     <template v-slot="{ node, data }">
       <span class="custom-tree-node">
+        <span
+          style="color: blue; font-size: 12px; position: relative; top: -2px"
+          v-if="data.typ === 'host'"
+        >
+          ⌖
+        </span>
         <span style="color: #a2e701" v-if="data.id === selected"> > </span>
         <span style="color: #e51c02" v-if="data.id === copied"> > </span>
         <span>{{ node.label }}</span>

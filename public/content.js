@@ -1,3 +1,4 @@
+/// <reference types="chrome"/>
 // console.log('content script start');
 
 // inject injected script
