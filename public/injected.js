@@ -55,8 +55,8 @@ window.fetch = async (...args) => {
   try {
     var url = args[0]
     var method = 'GET'
-    var body = null
-    var headers = null
+    var body
+    var headers
     var contentType = response.headers.get('Content-Type')
 
     if (Object.getPrototypeOf(args[0])[Symbol.toStringTag] === 'Request') {

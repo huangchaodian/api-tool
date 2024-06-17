@@ -60,7 +60,7 @@ const handleReply = async () => {
     method: method,
     headers: toRaw(selectedRequest.value?.headers)
   }
-  if (method === 'POST') {
+  if (method.toLocaleUpperCase() === 'POST') {
     request.requestBody = monacoEditReq?.value?.getEditorValue()
   }
   const data = await replay(request)

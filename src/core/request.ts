@@ -105,11 +105,12 @@ export function onMessage(requests: MyRequest[]) {
 export async function replay(request: MyRequest) {
   const config: RequestInit = {
     method: request.method,
-    headers: request.headers
+    headers: request.headers,
+    body: request.requestBody
   }
-  if (request.method === 'POST') {
-    config.body = request.requestBody
-  }
+  // if (request.method === 'POST') {
+  //   config.body = request.requestBody
+  // }
   console.log(request, config)
   const response = await fetch(request.url, config)
   if (!response.ok) {
