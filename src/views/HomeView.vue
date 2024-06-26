@@ -83,8 +83,7 @@ const handleDiff = () => {
   showDiff.value = !showDiff.value
 }
 const handleClear = () => {
-  console.log('clear')
-  requests.value = []
+  requests.value.splice(0, requests.value.length)
   clearHistoryMessage(requests.value)
 }
 nextTick(() => {
