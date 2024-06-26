@@ -81,7 +81,20 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
   return tree
 }
 
+function loadHistoryMessage(requests: MyRequest[]) {
+  chrome.runtime.sendMessage({ data: { type: 'loadAllRequests' } }, function (response) {
+    requests.unshift(...response.data)
+  })
+}
+
+export function clearHistoryMessage(requests: MyRequest[]) {
+  requests = []
+  console.log('clear')
+  chrome.runtime.sendMessage({ data: { type: 'clearAllRequests' } }, function (response) {})
+}
+
 export function onMessage(requests: MyRequest[]) {
+  loadHistoryMessage(requests)
   chrome.runtime &&
     chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       sendResponse(true)
@@ -98,8 +111,6 @@ export function onMessage(requests: MyRequest[]) {
       }
       console.log(item)
       requests.push(item)
-      // setTimeout(function () {
-      // }, 1)
     })
 }
 export async function replay(request: MyRequest) {

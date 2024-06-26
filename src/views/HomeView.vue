@@ -3,7 +3,13 @@ import RequestTree from '@/components/RequestTree.vue'
 import RequestAction from '@/components/RequestAction.vue'
 import MyMonacoEditor from '@/components/editor/MyMonacoEditor.vue'
 import { ref, computed, nextTick, toRaw } from 'vue'
-import { getTreeData, onMessage, replay, type MyRequest } from '../core/request'
+import {
+  getTreeData,
+  onMessage,
+  replay,
+  clearHistoryMessage,
+  type MyRequest
+} from '../core/request'
 import { resizeDiv } from '../components/resize/resizeDiv'
 
 const requests = ref<MyRequest[]>([
@@ -76,6 +82,11 @@ const handleCopy = () => {
 const handleDiff = () => {
   showDiff.value = !showDiff.value
 }
+const handleClear = () => {
+  console.log('clear')
+  requests.value = []
+  clearHistoryMessage(requests.value)
+}
 nextTick(() => {
   resizeDiv('home-view', 'left-tree', 'resize', 'right-content')
 })
@@ -96,7 +107,12 @@ nextTick(() => {
     </div>
     <div class="right-content">
       <div class="action">
-        <RequestAction @replay="handleReply" @copy="handleCopy" @diff="handleDiff"></RequestAction>
+        <RequestAction
+          @replay="handleReply"
+          @copy="handleCopy"
+          @diff="handleDiff"
+          @clear="handleClear"
+        ></RequestAction>
       </div>
       <div class="request-url" v-if="selectedIndex !== -1">
         <MyMonacoEditor

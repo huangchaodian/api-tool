@@ -14,10 +14,7 @@ window.addEventListener('message', function (e) {
   try {
     chrome.runtime.sendMessage(
       {
-        data: {
-          ...e.data,
-          protocol: document.location.protocol
-        }
+        data: e.data
       },
       function () {
         if (!chrome.runtime.lastError) {
