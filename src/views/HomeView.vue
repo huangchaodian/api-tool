@@ -59,6 +59,7 @@ const handleNodeClick = (data: number) => {
   }
   console.log(selectedRequest)
 }
+const disableReplay = ref(false)
 const handleReply = async () => {
   let method = selectedRequest.value?.method || 'GET'
   const request: MyRequest = {
@@ -69,7 +70,9 @@ const handleReply = async () => {
   if (method.toLocaleUpperCase() === 'POST') {
     request.requestBody = monacoEditReq?.value?.getEditorValue()
   }
+  disableReplay.value = true
   const data = await replay(request)
+  disableReplay.value = false
   request.responseBody = data
   requests.value.push(request)
   selectedIndex.value = requests.value.length - 1
@@ -107,6 +110,7 @@ nextTick(() => {
     <div class="right-content">
       <div class="action">
         <RequestAction
+          :disable-replay="disableReplay"
           @replay="handleReply"
           @copy="handleCopy"
           @diff="handleDiff"

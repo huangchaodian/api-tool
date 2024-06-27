@@ -82,15 +82,16 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
 }
 
 function loadHistoryMessage(requests: MyRequest[]) {
-  chrome.runtime.sendMessage({ data: { type: 'loadAllRequests' } }, function (response) {
-    requests.unshift(...response.data)
-  })
+  chrome.runtime &&
+    chrome.runtime.sendMessage({ data: { type: 'loadAllRequests' } }, function (response) {
+      requests.unshift(...response.data)
+    })
 }
 
 export function clearHistoryMessage(requests: MyRequest[]) {
-  requests = []
   console.log('clear')
-  chrome.runtime.sendMessage({ data: { type: 'clearAllRequests' } }, function (response) {})
+  chrome.runtime &&
+    chrome.runtime.sendMessage({ data: { type: 'clearAllRequests' } }, function (response) {})
 }
 
 export function onMessage(requests: MyRequest[]) {
@@ -114,19 +115,24 @@ export function onMessage(requests: MyRequest[]) {
     })
 }
 export async function replay(request: MyRequest) {
-  const config: RequestInit = {
-    method: request.method,
-    headers: request.headers,
-    body: request.requestBody
+  try {
+    const config: RequestInit = {
+      method: request.method,
+      headers: request.headers,
+      body: request.requestBody
+    }
+    // if (request.method === 'POST') {
+    //   config.body = request.requestBody
+    // }
+    console.log(request, config)
+    const response = await fetch(request.url, config)
+    if (!response.ok) {
+      return 'An error has occured:' + response.status
+    }
+    const data = await response.text()
+    return data
+  } catch (e) {
+    console.log(request, e)
+    return 'An error has occured:' + e
   }
-  // if (request.method === 'POST') {
-  //   config.body = request.requestBody
-  // }
-  console.log(request, config)
-  const response = await fetch(request.url, config)
-  if (!response.ok) {
-    return 'An error has occured:' + response.status
-  }
-  const data = await response.text()
-  return data
 }
