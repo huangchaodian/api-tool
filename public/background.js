@@ -24,7 +24,7 @@ chrome.runtime &&
       responseContentType: e.responseContentType,
       responseBody: e.responseData
     }
-    console.log(item)
+    console.log(allRequests.length, item)
     if (allRequests.length > 1000) {
       //默认最多保留1000历史请求
       allRequests.pop()

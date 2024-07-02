@@ -1,9 +1,8 @@
 # api-tool
 
 ## introduction
-``
-api tool is a chrome extensions provider ability to compare ajax request, modify request then replay etc.
-``
+
+`api tool is a chrome extensions provider ability to compare ajax request, modify request then replay etc.`
 
 ## Recommended IDE Setup
 
@@ -40,3 +39,8 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### todo list
+
+auto resize editor
+add status, response size and total time
