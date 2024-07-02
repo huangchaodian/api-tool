@@ -26,8 +26,9 @@ const requests = ref<MyRequest[]>([
   //   responseBody: '{"c":7,"d":8}'
   // }
 ])
+const DEFAULT_INDEX = -1
 //editor
-const selectedIndex = ref(-1)
+const selectedIndex = ref(DEFAULT_INDEX)
 const selectedRequest = computed(() => {
   if (selectedIndex.value >= 0) {
     return requests.value[selectedIndex.value]
@@ -38,7 +39,7 @@ const monacoEditUrl = ref()
 const monacoEditReq = ref()
 //diff editor
 const showDiff = ref(false)
-const selectedCopyIndex = ref(-1)
+const selectedCopyIndex = ref(DEFAULT_INDEX)
 const selectedCopyedRequest = computed(() => {
   if (selectedCopyIndex.value >= 0) {
     return requests.value[selectedCopyIndex.value]
@@ -55,7 +56,6 @@ const treeData = computed(() => {
 const handleNodeClick = (data: number) => {
   if (data >= 0) {
     selectedIndex.value = data
-    showDiff.value = false
   }
   console.log(selectedRequest)
 }
@@ -83,6 +83,13 @@ const handleCopy = () => {
   }
 }
 const handleDiff = () => {
+  if (selectedIndex.value >= 0) {
+    selectedCopyIndex.value = selectedIndex.value
+  }
+  if (showDiff.value) {
+    selectedCopyIndex.value = DEFAULT_INDEX
+  }
+
   showDiff.value = !showDiff.value
 }
 const handleClear = () => {
@@ -117,7 +124,7 @@ nextTick(() => {
           @clear="handleClear"
         ></RequestAction>
       </div>
-      <div class="request-url" v-if="selectedIndex !== -1">
+      <div class="request-url">
         <MyMonacoEditor
           v-if="!showDiff"
           editor-id="monaco-edit-url"
@@ -135,7 +142,7 @@ nextTick(() => {
           :height="40"
         ></MyMonacoDiffEditor>
       </div>
-      <div class="request-body" v-if="selectedIndex !== -1">
+      <div class="request-body">
         <MyMonacoEditor
           v-if="!showDiff"
           editor-id="monaco-edit-req"
@@ -153,13 +160,13 @@ nextTick(() => {
           :height="200"
         ></MyMonacoDiffEditor>
       </div>
-      <div class="response" v-if="selectedIndex !== -1">
+      <div class="response">
         <MyMonacoEditor
           v-if="!showDiff"
           editor-id="monaco-edit-resp"
           language="json"
           :text="selectedRequest?.responseBody || ''"
-          height="calc(100vh - 340px)"
+          height="calc(100vh - 440px)"
         ></MyMonacoEditor>
         <MyMonacoDiffEditor
           v-if="showDiff"
@@ -167,7 +174,7 @@ nextTick(() => {
           language="json"
           :original="selectedCopyedRequest?.responseBody || ''"
           :modified="selectedRequest?.responseBody || ''"
-          height="calc(100vh - 340px)"
+          height="calc(100vh - 440px)"
         ></MyMonacoDiffEditor>
       </div>
     </div>
@@ -179,8 +186,11 @@ nextTick(() => {
   display: flex;
 }
 .left-tree {
-  width: 30%;
-  height: calc(100vh - 100px);
+  background-color: white;
+  padding-top: 2rem;
+  padding-left: 2rem;
+  width: 400px;
+  height: 100vh;
   overflow: scroll;
   overflow-y: scroll;
 }
@@ -188,7 +198,7 @@ nextTick(() => {
   cursor: col-resize;
   float: left;
   position: relative;
-  top: 45%;
+  top: 50%;
   background-color: #d6d6d6;
   border-radius: 5px;
   margin-top: -10px;
@@ -204,10 +214,34 @@ nextTick(() => {
   color: #444444;
 }
 .right-content {
-  width: calc(70% - 10px);
+  width: calc(100% - 400px);
 }
 .action {
+  margin-top: 10px;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: white;
+  padding-top: 24px;
   padding-left: 24px;
+  padding-bottom: 10px;
+}
+.request-url {
+  padding-top: 24px;
+  background-color: white;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.request-body {
+  padding-top: 24px;
+  background-color: white;
+  padding-bottom: 10px;
+  border-radius: 0 0 12px 12px;
+}
+.response {
+  margin-top: 12px;
+  padding-top: 24px;
+  border-radius: 12px 12px 0 0;
+  background-color: white;
   padding-bottom: 10px;
 }
 </style>

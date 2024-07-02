@@ -16,8 +16,11 @@ window.addEventListener('message', function (e) {
       {
         data: e.data
       },
-      function () {
+      function (response) {
         if (!chrome.runtime.lastError) {
+          if (e && e.data && e.data.type === 'loadAllRequests') {
+            e.source.postMessage({ type: 'loadAllRequestsResult', ...response }, e.origin)
+          }
         }
       }
     )

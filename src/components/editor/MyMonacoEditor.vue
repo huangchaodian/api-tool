@@ -52,6 +52,10 @@ watch(
 <template>
   <div
     :id="editorId"
-    :style="{ height: typeof height === 'number' ? height + 'px' : height }"
+    :style="{
+      height: typeof height === 'number' ? height + 'px' : height,
+      resize: 'vertical',
+      overflow: 'auto'
+    }"
   ></div>
 </template>

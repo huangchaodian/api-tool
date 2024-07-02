@@ -82,10 +82,18 @@ export function getTreeData(requests: MyRequest[]): MyTree[] {
 }
 
 function loadHistoryMessage(requests: MyRequest[]) {
-  chrome.runtime &&
+  if (chrome.runtime) {
     chrome.runtime.sendMessage({ data: { type: 'loadAllRequests' } }, function (response) {
       requests.unshift(...response.data)
     })
+  } else {
+    window.addEventListener('message', function (event) {
+      if (event.data.type === 'loadAllRequestsResult') {
+        requests.unshift(...event.data.data)
+      }
+    })
+    window.postMessage({ type: 'loadAllRequests' }, '*')
+  }
 }
 
 export function clearHistoryMessage(requests: MyRequest[]) {
