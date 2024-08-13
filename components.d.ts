@@ -7,12 +7,19 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    copy: typeof import('./src/components/RequestBody copy.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
+    ElTabPane: typeof import('element-plus/es')['ElTabPane']
+    ElTabs: typeof import('element-plus/es')['ElTabs']
     ElTree: typeof import('element-plus/es')['ElTree']
     MyMonacoDiffEditor: typeof import('./src/components/editor/MyMonacoDiffEditor.vue')['default']
     MyMonacoEditor: typeof import('./src/components/editor/MyMonacoEditor.vue')['default']
     RequestAction: typeof import('./src/components/RequestAction.vue')['default']
+    RequestBody: typeof import('./src/components/req/RequestBody.vue')['default']
+    RequestHeader: typeof import('./src/components/req/RequestHeader.vue')['default']
+    RequestQuery: typeof import('./src/components/req/RequestQuery.vue')['default']
     RequestTree: typeof import('./src/components/RequestTree.vue')['default']
+    RequestUrl: typeof import('./src/components/req/RequestUrl.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

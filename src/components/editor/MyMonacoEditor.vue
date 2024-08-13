@@ -12,7 +12,16 @@ let editInstance: monaco.editor.IStandaloneCodeEditor | null = null
 const getEditorValue = () => {
   return editInstance?.getModel()?.getValue()
 }
-defineExpose({ getEditorValue })
+const layout = () => {
+  nextTick(() => {
+    let editorDom = document.getElementById(props.editorId)
+    editInstance?.layout({
+      width: editorDom?.clientWidth || 0,
+      height: editorDom?.clientHeight || 0
+    })
+  })
+}
+defineExpose({ getEditorValue, layout })
 
 const getJsonModel = (data: string) => {
   try {
@@ -24,6 +33,7 @@ const getJsonModel = (data: string) => {
 }
 nextTick(() => {
   let editorDom = document.getElementById(props.editorId)
+  // console.log('editorDom', props.editorId, editorDom)
   if (editorDom !== null) {
     if (props.language === 'text') {
       editInstance = monaco.editor.create(editorDom, {

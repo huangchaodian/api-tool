@@ -22,7 +22,7 @@ const handleNodeClick = (data: MyTree) => {
 }
 const myElTree = ref()
 const defaultExpendKeys = ref<number[]>([])
-const getExtendNode = (data: object, node: _Node, item: object) => {
+const getExtendNode = (data: object, node: _Node) => {
   nextTick(() => {
     while (node.expanded && node.childNodes && node.childNodes.length === 1) {
       node = node.childNodes[0]

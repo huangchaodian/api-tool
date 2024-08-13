@@ -2,7 +2,7 @@
 import RequestTree from '@/components/RequestTree.vue'
 import RequestAction from '@/components/RequestAction.vue'
 import MyMonacoEditor from '@/components/editor/MyMonacoEditor.vue'
-import { ref, computed, nextTick, toRaw } from 'vue'
+import { ref, computed, nextTick, toRaw, watch } from 'vue'
 import {
   getTreeData,
   onMessage,
@@ -11,21 +11,11 @@ import {
   type MyRequest
 } from '../core/request'
 import { resizeDiv } from '../components/resize/resizeDiv'
+import RequestUrl from '@/components/req/RequestUrl.vue'
+import RequestBody from '@/components/req/RequestBody.vue'
+import RequestHeader from '@/components/req/RequestHeader.vue'
 
-const requests = ref<MyRequest[]>([
-  // {
-  //   url: 'http://localhost/test/tmp',
-  //   method: 'POST',
-  //   requestBody: '{"a":1,"b":2}',
-  //   responseBody: '{"c":3,"d":4}'
-  // },
-  // {
-  //   url: 'http://localhost/test/tmp',
-  //   method: 'POST',
-  //   requestBody: '{"a":5,"b":6}',
-  //   responseBody: '{"c":7,"d":8}'
-  // }
-])
+const requests = ref<MyRequest[]>([])
 const DEFAULT_INDEX = -1
 //editor
 const selectedIndex = ref(DEFAULT_INDEX)
@@ -36,7 +26,8 @@ const selectedRequest = computed(() => {
   return null
 })
 const monacoEditUrl = ref()
-const monacoEditReq = ref()
+const monacoEditBody = ref()
+const monacoEditHeader = ref()
 //diff editor
 const showDiff = ref(false)
 const selectedCopyIndex = ref(DEFAULT_INDEX)
@@ -68,7 +59,8 @@ const handleReply = async () => {
     headers: toRaw(selectedRequest.value?.headers)
   }
   if (method.toLocaleUpperCase() === 'POST') {
-    request.requestBody = monacoEditReq?.value?.getEditorValue()
+    request.requestBody = monacoEditBody?.value?.getEditorValue()
+    request.headers = monacoEditHeader?.value?.getEditorValue()
   }
   disableReplay.value = true
   const data = await replay(request)
@@ -99,6 +91,15 @@ const handleClear = () => {
 nextTick(() => {
   resizeDiv('home-view', 'left-tree', 'resize', 'right-content')
 })
+const activeReqTabName = ref('body')
+
+watch(
+  () => activeReqTabName.value,
+  () => {
+    monacoEditBody.value.layout()
+    monacoEditHeader.value.layout()
+  }
+)
 </script>
 
 <template>
@@ -125,40 +126,34 @@ nextTick(() => {
         ></RequestAction>
       </div>
       <div class="request-url">
-        <MyMonacoEditor
-          v-if="!showDiff"
-          editor-id="monaco-edit-url"
+        <RequestUrl
           ref="monacoEditUrl"
-          language="text"
-          :text="selectedRequest?.url || ''"
-          :height="40"
-        ></MyMonacoEditor>
-        <MyMonacoDiffEditor
-          v-if="showDiff"
-          editor-id="monaco-diff-edit-url"
-          language="text"
-          :original="selectedCopyedRequest?.url || ''"
-          :modified="selectedRequest?.url || ''"
-          :height="40"
-        ></MyMonacoDiffEditor>
+          :show-diff="showDiff"
+          :url="selectedRequest?.url || ''"
+          :org-url="selectedCopyedRequest?.url || ''"
+        ></RequestUrl>
       </div>
-      <div class="request-body">
-        <MyMonacoEditor
-          v-if="!showDiff"
-          editor-id="monaco-edit-req"
-          ref="monacoEditReq"
-          language="json"
-          :text="selectedRequest?.requestBody || ''"
-          :height="200"
-        ></MyMonacoEditor>
-        <MyMonacoDiffEditor
-          v-if="showDiff"
-          editor-id="monaco-diff-edit-req"
-          language="json"
-          :original="selectedCopyedRequest?.requestBody || ''"
-          :modified="selectedRequest?.requestBody || ''"
-          :height="200"
-        ></MyMonacoDiffEditor>
+      <div class="request-info">
+        <el-tabs v-model="activeReqTabName" class="request-info-tabs">
+          <el-tab-pane label="Body" name="body"> </el-tab-pane>
+          <el-tab-pane label="Header" name="header"> </el-tab-pane>
+        </el-tabs>
+        <div v-show="activeReqTabName === 'body'">
+          <RequestBody
+            ref="monacoEditBody"
+            :show-diff="showDiff"
+            :body="selectedRequest?.requestBody || ''"
+            :org-body="selectedCopyedRequest?.requestBody || ''"
+          ></RequestBody>
+        </div>
+        <div v-show="activeReqTabName === 'header'">
+          <RequestHeader
+            ref="monacoEditHeader"
+            :show-diff="showDiff"
+            :header="selectedRequest?.headers"
+            :org-header="selectedCopyedRequest?.headers"
+          ></RequestHeader>
+        </div>
       </div>
       <div class="response">
         <MyMonacoEditor
@@ -230,6 +225,11 @@ nextTick(() => {
   background-color: white;
   padding-bottom: 10px;
   border-bottom: 1px solid #f0f0f0;
+}
+.request-info {
+  background-color: white;
+  padding-left: 24px;
+  border-radius: 0 0 12px 12px;
 }
 .request-body {
   padding-top: 24px;
