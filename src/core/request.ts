@@ -88,7 +88,7 @@ function loadHistoryMessage(requests: MyRequest[]) {
     })
   } else {
     window.addEventListener('message', function (event) {
-      if (event.data.type === 'loadAllRequestsResult') {
+      if (event.data.type === 'loadAllRequestsResult' && event.data.data) {
         requests.unshift(...event.data.data)
       }
     })

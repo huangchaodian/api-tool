@@ -56,11 +56,10 @@ const handleReply = async () => {
   const request: MyRequest = {
     url: monacoEditUrl?.value?.getEditorValue(),
     method: method,
-    headers: toRaw(selectedRequest.value?.headers)
+    headers: monacoEditHeader?.value?.getEditorValue()
   }
   if (method.toLocaleUpperCase() === 'POST') {
     request.requestBody = monacoEditBody?.value?.getEditorValue()
-    request.headers = monacoEditHeader?.value?.getEditorValue()
   }
   disableReplay.value = true
   const data = await replay(request)
